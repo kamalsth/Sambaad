@@ -49,10 +49,10 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        title: Text(widget.groupName),
-        backgroundColor: Theme.of(context).primaryColor,
+       centerTitle: true,
+       elevation: 0,
+       title: Text(widget.groupName),
+       backgroundColor: Theme.of(context).primaryColor,       
         actions: [
           IconButton(
               onPressed: () {
@@ -65,9 +65,10 @@ class _ChatPageState extends State<ChatPage> {
                       userName: widget.userName,
                     ));
               },
-              icon: const Icon(Icons.info))
+              icon: const Icon(Icons.info))       
         ],
       ),
+      
 
       body: Column(
         children: <Widget>[
