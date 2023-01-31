@@ -8,15 +8,16 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 
 class AESEncryption {
   static encryptAES(plainText) {
-    final key = encrypt.Key.fromUtf8('my 32 length key................');
+    final key = encrypt.Key.fromUtf8('JaNdRgUkXp2s5v8y/B?E(H+MbQeShVmY');
     final iv = encrypt.IV.fromLength(16);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final encrypted = encrypter.encrypt(plainText, iv: iv);
     return encrypted.base64;
+
   }
 
   static decryptAES(encryptedText) {
-    final key = encrypt.Key.fromUtf8('my 32 length key................');
+    final key = encrypt.Key.fromUtf8('JaNdRgUkXp2s5v8y/B?E(H+MbQeShVmY');
     final iv = encrypt.IV.fromLength(16);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final encrypted = encrypt.Encrypted.fromBase64(encryptedText);
