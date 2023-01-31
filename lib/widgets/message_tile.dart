@@ -71,8 +71,14 @@ class _MessageTileState extends State<MessageTile> {
                 textAlign: TextAlign.start,
                 style: const TextStyle(fontSize: 16, color: Colors.white)),
 
+
+            
+
+
           ],
+          
         ),
+        
       ),
        
     );
