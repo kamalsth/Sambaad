@@ -4,6 +4,26 @@ import 'package:sambaad/pages/group_info.dart';
 import 'package:sambaad/services/database_services.dart';
 import 'package:sambaad/widgets/message_tile.dart';
 import 'package:sambaad/widgets/widgets.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+
+class AESEncryption {
+  static encryptAES(plainText) {
+    final key = encrypt.Key.fromUtf8('my 32 length key................');
+    final iv = encrypt.IV.fromLength(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+    return encrypted.base64;
+  }
+
+  static decryptAES(encryptedText) {
+    final key = encrypt.Key.fromUtf8('my 32 length key................');
+    final iv = encrypt.IV.fromLength(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    final encrypted = encrypt.Encrypted.fromBase64(encryptedText);
+    final decrypted = encrypter.decrypt(encrypted, iv: iv);
+    return decrypted;
+  }
+}
 
 class ChatPage extends StatefulWidget {
   final String groupId;
@@ -135,7 +155,8 @@ class _ChatPageState extends State<ChatPage> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
-                      message: snapshot.data.docs[index]['message'],
+                     // message: snapshot.data.docs[index]['message'],
+                      message: AESEncryption.decryptAES(snapshot.data.docs[index]['message']),
                       sender: snapshot.data.docs[index]['sender'],
                       sentByMe: widget.userName ==
                           snapshot.data.docs[index]['sender'],
@@ -151,7 +172,8 @@ class _ChatPageState extends State<ChatPage> {
   sendMessage() {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
-        "message": messageController.text,
+       // "message": messageController.text,
+        "message": AESEncryption.encryptAES(messageController.text),
         "sender": widget.userName,
         "time": DateTime.now().millisecondsSinceEpoch,
       };
