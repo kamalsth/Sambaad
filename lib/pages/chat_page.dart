@@ -7,6 +7,8 @@ import 'package:sambaad/widgets/message_tile.dart';
 import 'package:sambaad/widgets/widgets.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
+import 'BMsearchMessage_page.dart';
+
 class AESEncryption {
   static encryptAES(plainText) {
     final key = encrypt.Key.fromUtf8('JaNdRgUkXp2s5v8y/B?E(H+MbQeShVmY');
@@ -77,7 +79,7 @@ class _ChatPageState extends State<ChatPage> {
        backgroundColor: Theme.of(context).primaryColor,       
         actions: [
           IconButton(onPressed:(){
-            nextScreen(context, SearchMessage(groupId: widget.groupId));
+            nextScreen(context, BMsearchMessage(groupId: widget.groupId));
           }, icon: const Icon(Icons.search)),
 
 

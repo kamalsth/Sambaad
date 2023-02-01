@@ -1,23 +1,59 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class SearchMessage extends StatefulWidget {
+
+List<DocumentSnapshot> searchForMessage(String searchText, QuerySnapshot snapshot) {
+  List<DocumentSnapshot> result = [];
+  for (final DocumentSnapshot message in snapshot.docs) {
+    if (BoyerMoore(searchText, message.get('message'))) {
+      result.add(message);
+    }
+  }
+  return result;
+}
+
+bool BoyerMoore(String searchText, String message) {
+  int n = message.length;
+  int m = searchText.length;
+  List<int> right = List.filled(256, -1);
+
+  for (int j = 0; j < m; j++) {
+    right[searchText.codeUnitAt(j)] = j;
+  }
+
+  int skip;
+  for (int i = 0; i <= n - m; i += skip) {
+    skip = 0;
+    for (int j = m - 1; j >= 0; j--) {
+      if (searchText[j] != message[i + j]) {
+        skip = max(1, j - right[message.codeUnitAt(i + j)]);
+        break;
+      }
+    }
+    if (skip == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+class BMsearchMessage extends StatefulWidget {
   final String groupId;
 
-
-  const SearchMessage({Key?key,
+  const BMsearchMessage({Key?key,
   required this.groupId,
 
   }):super(key:key);
-  
 
   @override
-  State<SearchMessage> createState() => _SearchMessageState();
+  State<BMsearchMessage> createState() => _BMsearchMessageState();
 }
 
-class _SearchMessageState extends State<SearchMessage> {
-  Stream? groups;
+class _BMsearchMessageState extends State<BMsearchMessage> {
+   Stream? groups;
   TextEditingController searchController = TextEditingController();
   bool isLoading = false;
   QuerySnapshot? searchSnapshot;
@@ -25,16 +61,11 @@ class _SearchMessageState extends State<SearchMessage> {
   String userName = "";
   bool isJoined = false;
   User? user;
-  
-
-
-
-
 
 
   @override
   Widget build(BuildContext context) {
-        return Scaffold(
+    return   Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
@@ -64,18 +95,23 @@ class _SearchMessageState extends State<SearchMessage> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  final QuerySnapshot searchResults = await FirebaseFirestore.instance
-                      .collection("groups").doc(widget.groupId).collection("messages").where('message', isEqualTo: searchController.text)
-                      .get();
-                  setState(() {
-                    searchSnapshot = searchResults;
-                    hasUserSearched = true;
-                    isLoading = false;
-                  });
-                },
+                       if (searchController.text.isNotEmpty) {
+                          setState(() {
+                          isLoading = true;
+                        });
+                       await FirebaseFirestore.instance
+                        .collection("groups").doc(widget.groupId).collection("messages")
+                        .get().then((snapshot){
+                          setState(() {
+                              searchSnapshot = snapshot;
+                              hasUserSearched = true;
+                              isLoading = false;
+                            });
+                        
+                        });
+                
+                       }
+                      },
                   
                   child: Container(
                     width: 40,
@@ -99,24 +135,22 @@ class _SearchMessageState extends State<SearchMessage> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : searchSnapshot != null &&
-                        searchSnapshot!.docs.isNotEmpty &&
-                        hasUserSearched
+                :searchSnapshot != null &&
+                  searchSnapshot!.docs.isNotEmpty &&
+                  hasUserSearched
                     ? ListView.builder(
-                        itemCount: searchSnapshot!.docs.length,
+                        itemCount: searchForMessage(searchController.text, searchSnapshot!).length,
                         itemBuilder: (context, index) {
-                          final DocumentSnapshot message = searchSnapshot!.docs[index];
+                          final DocumentSnapshot message = searchForMessage(searchController.text, searchSnapshot!)[index];
+                          
                           return ListTile(
+            
                             title: Text(message.get('message')),
                           );
                         },
                       )
-                    : const Center(
-                        child: Text(
-                          "No results found",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
+                    :Container(), 
+                    
           ),
           
         ],
