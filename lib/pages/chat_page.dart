@@ -77,7 +77,7 @@ class _ChatPageState extends State<ChatPage> {
        backgroundColor: Theme.of(context).primaryColor,       
         actions: [
           IconButton(onPressed:(){
-            nextScreen(context, SearchMessage());
+            nextScreen(context, SearchMessage(groupId: widget.groupId));
           }, icon: const Icon(Icons.search)),
 
 
@@ -162,8 +162,8 @@ class _ChatPageState extends State<ChatPage> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
-                     // message: snapshot.data.docs[index]['message'],
-                      message: AESEncryption.decryptAES(snapshot.data.docs[index]['message']),
+                      message: snapshot.data.docs[index]['message'],
+                     // message: AESEncryption.decryptAES(snapshot.data.docs[index]['message']),
                       sender: snapshot.data.docs[index]['sender'],
                       sentByMe: widget.userName ==
                           snapshot.data.docs[index]['sender'],
@@ -179,8 +179,8 @@ class _ChatPageState extends State<ChatPage> {
   sendMessage() {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
-       // "message": messageController.text,
-        "message": AESEncryption.encryptAES(messageController.text),
+        "message": messageController.text,
+       // "message": AESEncryption.encryptAES(messageController.text),
         "sender": widget.userName,
         "time": DateTime.now().millisecondsSinceEpoch,
       };

@@ -3,13 +3,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SearchMessage extends StatefulWidget {
-  const SearchMessage({super.key});
+  final String groupId;
+
+
+  const SearchMessage({Key?key,
+  required this.groupId,
+
+  }):super(key:key);
+  
 
   @override
   State<SearchMessage> createState() => _SearchMessageState();
 }
 
 class _SearchMessageState extends State<SearchMessage> {
+  Stream? groups;
   TextEditingController searchController = TextEditingController();
   bool isLoading = false;
   QuerySnapshot? searchSnapshot;
@@ -17,6 +25,10 @@ class _SearchMessageState extends State<SearchMessage> {
   String userName = "";
   bool isJoined = false;
   User? user;
+  
+
+
+
 
 
 
@@ -51,6 +63,19 @@ class _SearchMessageState extends State<SearchMessage> {
                   ),
                 ),
                 GestureDetector(
+                  onTap: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  final QuerySnapshot searchResults = await FirebaseFirestore.instance
+                      .collection("groups").doc(widget.groupId).collection("messages").where('message', isEqualTo: searchController.text)
+                      .get();
+                  setState(() {
+                    searchSnapshot = searchResults;
+                    hasUserSearched = true;
+                    isLoading = false;
+                  });
+                },
                   
                   child: Container(
                     width: 40,
@@ -66,6 +91,32 @@ class _SearchMessageState extends State<SearchMessage> {
                 )
               ],
             ),
+          ),
+
+
+          Expanded(
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : searchSnapshot != null &&
+                        searchSnapshot!.docs.isNotEmpty &&
+                        hasUserSearched
+                    ? ListView.builder(
+                        itemCount: searchSnapshot!.docs.length,
+                        itemBuilder: (context, index) {
+                          final DocumentSnapshot message = searchSnapshot!.docs[index];
+                          return ListTile(
+                            title: Text(message.get('message')),
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Text(
+                          "No results found",
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
           ),
           
         ],
