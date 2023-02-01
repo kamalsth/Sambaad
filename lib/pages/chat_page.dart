@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sambaad/pages/group_info.dart';
+import 'package:sambaad/pages/searchMessage_page.dart';
 import 'package:sambaad/services/database_services.dart';
 import 'package:sambaad/widgets/message_tile.dart';
 import 'package:sambaad/widgets/widgets.dart';
@@ -75,6 +76,11 @@ class _ChatPageState extends State<ChatPage> {
        title: Text(widget.groupName),
        backgroundColor: Theme.of(context).primaryColor,       
         actions: [
+          IconButton(onPressed:(){
+            nextScreen(context, SearchMessage());
+          }, icon: const Icon(Icons.search)),
+
+
           IconButton(
               onPressed: () {
                 nextScreen(
