@@ -16,7 +16,6 @@ class AESEncryption {
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final encrypted = encrypter.encrypt(plainText, iv: iv);
     return encrypted.base64;
-
   }
 
   static decryptAES(encryptedText) {
@@ -34,29 +33,30 @@ class ChatPage extends StatefulWidget {
   final String groupName;
   final String userName;
 
-  const ChatPage({Key?key,
-  required this.groupId,
-  required this.groupName,
-  required this.userName,
-  
-  }):super(key:key);
+  const ChatPage({
+    Key? key,
+    required this.groupId,
+    required this.groupName,
+    required this.userName,
+  }) : super(key: key);
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  Stream<QuerySnapshot>?chats;
-  TextEditingController messageController=TextEditingController();
-  String admin="";
+  Stream<QuerySnapshot>? chats;
+  TextEditingController messageController = TextEditingController();
+  String admin = "";
+  String selectedLanguageCode = "en";
 
   @override
-  void initState(){
+  void initState() {
     getChatandAdmin();
     super.initState();
   }
 
-  getChatandAdmin(){
+  getChatandAdmin() {
     DatabaseServices().getChats(widget.groupId).then((val) {
       setState(() {
         chats = val;
@@ -67,22 +67,72 @@ class _ChatPageState extends State<ChatPage> {
         admin = val;
       });
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       centerTitle: true,
-       elevation: 0,
-       title: Text(widget.groupName),
-       backgroundColor: Theme.of(context).primaryColor,       
+        //centerTitle: true,
+        elevation: 0,
+        title: Text(widget.groupName),
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
-          IconButton(onPressed:(){
-            nextScreen(context, BMsearchMessage(groupId: widget.groupId));
-          }, icon: const Icon(Icons.search)),
-
-
+          IconButton(
+              onPressed: () {
+                nextScreen(context, BMsearchMessage(groupId: widget.groupId));
+              },
+              icon: const Icon(Icons.search)),
+          
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              setState(() {
+                selectedLanguageCode = value;
+              });
+            },
+            tooltip: "Select language",
+            icon: const Icon(
+              Icons.language,
+              color: Colors.white,
+            ),
+            itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
+              PopupMenuItem(
+                value: "ne",
+                child: Container(
+                  color: selectedLanguageCode == 'ne' ? Colors.green : null,
+                  child: const Text("Nepali"),
+                ),
+              ),
+              PopupMenuItem(
+                value: "en",
+                child: Container(
+                  color: selectedLanguageCode == 'en' ? Colors.green : null,
+                  child: const Text("English"),
+                ),
+              ),
+              PopupMenuItem(
+                value: "fr",
+                child: Container(
+                  color: selectedLanguageCode == 'fr' ? Colors.green : null,
+                  child: const Text("French"),
+                ),
+              ),
+              PopupMenuItem(
+                value: "de",
+                child: Container(
+                  color: selectedLanguageCode == 'de' ? Colors.green : null,
+                  child: const Text("German"),
+                ),
+              ),
+              PopupMenuItem(
+                value: "zh",
+                child: Container(
+                  color: selectedLanguageCode == 'zh' ? Colors.green : null,
+                  child: const Text("Chinese"),
+                ),
+              ),
+            ],
+          ),
           IconButton(
               onPressed: () {
                 nextScreen(
@@ -94,19 +144,15 @@ class _ChatPageState extends State<ChatPage> {
                       userName: widget.userName,
                     ));
               },
-              icon: const Icon(Icons.info))       
+              icon: const Icon(Icons.info)),
         ],
       ),
-      
-
       body: Column(
         children: <Widget>[
-
-          // chat messages here 
-        Expanded(child: chatMessages()), // chatMessages() calling,
+          // chat messages here
+          Expanded(child: chatMessages()), // chatMessages() calling,
 
           Container(
-            
             alignment: Alignment.bottomCenter,
             width: MediaQuery.of(context).size.width,
             child: Container(
@@ -159,18 +205,40 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-              reverse: true,    //update
+                reverse: true, //update
 
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
-                  return MessageTile(
+                  if (widget.userName == snapshot.data.docs[index]['sender']) {
+                    return MessageTile(
                       message: snapshot.data.docs[index]['message'],
-                     // message: AESEncryption.decryptAES(snapshot.data.docs[index]['message']),
+                      // message: AESEncryption.decryptAES(snapshot.data.docs[index]['message']),
+
                       sender: snapshot.data.docs[index]['sender'],
                       sentByMe: widget.userName ==
                           snapshot.data.docs[index]['sender'],
-                        
-                          );
+                    );
+                  } else {
+                    if (snapshot
+                        .data
+                        .docs[index]['translatedfield'][selectedLanguageCode]
+                        .isEmpty) {
+                      return MessageTile(
+                        message: "Typing....",
+                        sender: snapshot.data.docs[index]['sender'],
+                        sentByMe: widget.userName ==
+                            snapshot.data.docs[index]['sender'],
+                      );
+                    } else {
+                      return MessageTile(
+                        message: snapshot.data.docs[index]['translatedfield']
+                            [selectedLanguageCode],
+                        sender: snapshot.data.docs[index]['sender'],
+                        sentByMe: widget.userName ==
+                            snapshot.data.docs[index]['sender'],
+                      );
+                    }
+                  }
                 },
               )
             : Container();
@@ -182,7 +250,7 @@ class _ChatPageState extends State<ChatPage> {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
-       // "message": AESEncryption.encryptAES(messageController.text),
+        // "message": AESEncryption.encryptAES(messageController.text),
         "sender": widget.userName,
         "time": DateTime.now().millisecondsSinceEpoch,
       };
