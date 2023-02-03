@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sambaad/pages/group_info.dart';
-import 'package:sambaad/pages/searchMessage_page.dart';
 import 'package:sambaad/services/database_services.dart';
 import 'package:sambaad/widgets/message_tile.dart';
 import 'package:sambaad/widgets/widgets.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'BMsearchMessage_page.dart';
 
 class AESEncryption {
@@ -48,10 +47,11 @@ class _ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
-  String selectedLanguageCode = "en";
+ String selectedLanguageCode = "en";
 
   @override
   void initState() {
+    getSavedLanguage();
     getChatandAdmin();
     super.initState();
   }
@@ -68,6 +68,16 @@ class _ChatPageState extends State<ChatPage> {
       });
     });
   }
+  void saveLanguage(String selectedLanguageCode) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString('selectedLanguageCode', selectedLanguageCode);
+  }
+void getSavedLanguage() async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  setState(() {
+    selectedLanguageCode = preferences.getString('selectedLanguageCode') ?? 'en';
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +94,12 @@ class _ChatPageState extends State<ChatPage> {
               },
               icon: const Icon(Icons.search)),
           
-          PopupMenuButton<String>(
+          PopupMenuButton<String> (
             onSelected: (value) {
               setState(() {
                 selectedLanguageCode = value;
               });
+             saveLanguage(value);
             },
             tooltip: "Select language",
             icon: const Icon(
