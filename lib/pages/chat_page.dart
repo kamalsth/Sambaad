@@ -109,38 +109,38 @@ class _ChatPageState extends State<ChatPage> {
               color: Colors.white,
             ),
             itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
-              PopupMenuItem(
+              PopupMenuItem (
                 value: "ne",
                 child: Container(
-                  color: selectedLanguageCode == 'ne' ? Colors.green : null,
+                  color: selectedLanguageCode == 'ne' ? Theme.of(context).primaryColor : null,
                   child: const Text("Nepali"),
                 ),
               ),
               PopupMenuItem(
                 value: "en",
                 child: Container(
-                  color: selectedLanguageCode == 'en' ? Colors.green : null,
+                  color: selectedLanguageCode == 'en' ? Theme.of(context).primaryColor : null,
                   child: const Text("English"),
                 ),
               ),
               PopupMenuItem(
                 value: "fr",
                 child: Container(
-                  color: selectedLanguageCode == 'fr' ? Colors.green : null,
+                  color: selectedLanguageCode == 'fr' ? Theme.of(context).primaryColor : null,
                   child: const Text("French"),
                 ),
               ),
               PopupMenuItem(
                 value: "de",
                 child: Container(
-                  color: selectedLanguageCode == 'de' ? Colors.green : null,
+                  color: selectedLanguageCode == 'de' ? Theme.of(context).primaryColor: null,
                   child: const Text("German"),
                 ),
               ),
               PopupMenuItem(
                 value: "zh",
                 child: Container(
-                  color: selectedLanguageCode == 'zh' ? Colors.green : null,
+                  color: selectedLanguageCode == 'zh' ? Theme.of(context).primaryColor : null,
                   child: const Text("Chinese"),
                 ),
               ),
