@@ -47,7 +47,7 @@ class _ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
- String selectedLanguageCode = "en";
+  String selectedLanguageCode = "en";
 
   @override
   void initState() {
@@ -68,16 +68,19 @@ class _ChatPageState extends State<ChatPage> {
       });
     });
   }
+
   void saveLanguage(String selectedLanguageCode) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString('selectedLanguageCode', selectedLanguageCode);
   }
-void getSavedLanguage() async {
-  SharedPreferences preferences = await SharedPreferences.getInstance();
-  setState(() {
-    selectedLanguageCode = preferences.getString('selectedLanguageCode') ?? 'en';
-  });
-}
+
+  void getSavedLanguage() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      selectedLanguageCode =
+          preferences.getString('selectedLanguageCode') ?? 'en';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,13 +96,12 @@ void getSavedLanguage() async {
                 nextScreen(context, BMsearchMessage(groupId: widget.groupId));
               },
               icon: const Icon(Icons.search)),
-          
-          PopupMenuButton<String> (
+          PopupMenuButton<String>(
             onSelected: (value) {
               setState(() {
                 selectedLanguageCode = value;
               });
-             saveLanguage(value);
+              saveLanguage(value);
             },
             tooltip: "Select language",
             icon: const Icon(
