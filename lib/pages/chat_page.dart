@@ -230,9 +230,19 @@ class _ChatPageState extends State<ChatPage> {
                       sender: snapshot.data.docs[index]['sender'],
                       sentByMe: widget.userName ==
                           snapshot.data.docs[index]['sender'],
+                      time:snapshot.data.docs[index]['time'],
                     );
                   } else {
-                    if (snapshot
+                      if(selectedLanguageCode=='en'){
+                         return MessageTile(
+                            message: snapshot.data.docs[index]['message'],
+                            sender: snapshot.data.docs[index]['sender'],
+                            sentByMe: widget.userName ==
+                                snapshot.data.docs[index]['sender'],
+                            time:snapshot.data.docs[index]['time'],
+                        );
+                      }
+                      if (snapshot
                         .data
                         .docs[index]['translatedfield'][selectedLanguageCode]
                         .isEmpty) {
@@ -241,6 +251,7 @@ class _ChatPageState extends State<ChatPage> {
                         sender: snapshot.data.docs[index]['sender'],
                         sentByMe: widget.userName ==
                             snapshot.data.docs[index]['sender'],
+                        time:snapshot.data.docs[index]['time'],
                       );
                     } else {
                       return MessageTile(
@@ -249,6 +260,7 @@ class _ChatPageState extends State<ChatPage> {
                         sender: snapshot.data.docs[index]['sender'],
                         sentByMe: widget.userName ==
                             snapshot.data.docs[index]['sender'],
+                        time:snapshot.data.docs[index]['time'],
                       );
                     }
                   }

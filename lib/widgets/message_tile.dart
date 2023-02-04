@@ -1,15 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
+import 'package:intl/intl.dart';
 
 class MessageTile extends StatefulWidget {
   final String message;
   final String sender;
   final bool sentByMe;
+  final int time;
 
   const MessageTile({Key?key,
   required this.message,
   required this.sender,
   required this.sentByMe,
+  required this.time,
   }):super(key:key);
 
   @override
@@ -33,7 +37,7 @@ class _MessageTileState extends State<MessageTile> {
             ? const EdgeInsets.only(left: 30)
             : const EdgeInsets.only(right: 30),
         padding:
-            const EdgeInsets.only(top: 17, bottom: 17, left: 20, right: 20),
+            const EdgeInsets.only(top: 17, bottom: 10, left: 20, right: 20),
         decoration: BoxDecoration(
             borderRadius: widget.sentByMe
                 ? const BorderRadius.only(
@@ -62,7 +66,7 @@ class _MessageTileState extends State<MessageTile> {
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  letterSpacing: -0.5),
+                 ),
             ),
             const SizedBox(
               height: 8,
@@ -70,6 +74,17 @@ class _MessageTileState extends State<MessageTile> {
             Text(widget.message,
                 textAlign: TextAlign.start,
                 style: const TextStyle(fontSize: 16, color: Colors.white)),
+
+            const SizedBox(height: 8,),
+            Text(
+              dateDifference(),
+              textAlign: TextAlign.start,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
 
 
             
@@ -82,5 +97,22 @@ class _MessageTileState extends State<MessageTile> {
       ),
        
     );
+  }
+  
+  String dateDifference() {
+     var widgetTime = DateTime.fromMillisecondsSinceEpoch(widget.time)
+        .toLocal()
+        .toUtc()
+        .add(const Duration(hours: 5, minutes: 45));
+    var currentTime = DateTime.now();
+    var difference = currentTime.difference(widgetTime).inDays;
+
+    if (difference == 0) {
+      return DateFormat.jm().format(widgetTime);
+    } else if (difference == 1) {
+      return "Yesterday at ${DateFormat.jm().format(widgetTime)}";
+    } else {
+      return "$difference days ago";
+    }
   }
 }
