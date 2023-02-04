@@ -48,11 +48,13 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController messageController = TextEditingController();
   String admin = "";
   String selectedLanguageCode = "en";
+  bool isEncrypted = false;
 
   @override
   void initState() {
     getSavedLanguage();
     getChatandAdmin();
+    getEncryptionState();
     super.initState();
   }
 
@@ -79,6 +81,18 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       selectedLanguageCode =
           preferences.getString('selectedLanguageCode') ?? 'en';
+    });
+  }
+
+  void saveEncryptionState(bool isEncrypted) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setBool('isEncrypted', isEncrypted);
+  }
+
+  void getEncryptionState() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      isEncrypted = preferences.getBool('isEncrypted') ?? false;
     });
   }
 
@@ -109,42 +123,89 @@ class _ChatPageState extends State<ChatPage> {
               color: Colors.white,
             ),
             itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
-              PopupMenuItem (
+              PopupMenuItem(
                 value: "ne",
                 child: Container(
-                  color: selectedLanguageCode == 'ne' ? Theme.of(context).primaryColor : null,
+                  color: selectedLanguageCode == 'ne'
+                      ? Theme.of(context).primaryColor
+                      : null,
                   child: const Text("Nepali"),
                 ),
               ),
               PopupMenuItem(
                 value: "en",
                 child: Container(
-                  color: selectedLanguageCode == 'en' ? Theme.of(context).primaryColor : null,
+                  color: selectedLanguageCode == 'en'
+                      ? Theme.of(context).primaryColor
+                      : null,
                   child: const Text("English"),
                 ),
               ),
               PopupMenuItem(
                 value: "fr",
                 child: Container(
-                  color: selectedLanguageCode == 'fr' ? Theme.of(context).primaryColor : null,
+                  color: selectedLanguageCode == 'fr'
+                      ? Theme.of(context).primaryColor
+                      : null,
                   child: const Text("French"),
                 ),
               ),
               PopupMenuItem(
                 value: "de",
                 child: Container(
-                  color: selectedLanguageCode == 'de' ? Theme.of(context).primaryColor: null,
+                  color: selectedLanguageCode == 'de'
+                      ? Theme.of(context).primaryColor
+                      : null,
                   child: const Text("German"),
                 ),
               ),
               PopupMenuItem(
                 value: "zh",
                 child: Container(
-                  color: selectedLanguageCode == 'zh' ? Theme.of(context).primaryColor : null,
+                  color: selectedLanguageCode == 'zh'
+                      ? Theme.of(context).primaryColor
+                      : null,
                   child: const Text("Chinese"),
                 ),
               ),
             ],
+          ),
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("🔒 Encryption"),
+                    content: Text(isEncrypted
+                        ? "⚠️ Do you want to disable end-to-end encryption?"
+                        : "Do you want to enable end-to-end encryption? Doing so will disable the translation functionality."),
+                    actions: [
+                      ElevatedButton(
+                        child: const Text("No"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      ElevatedButton(
+                        child: const Text("Yes"),
+                        onPressed: () {
+                          setState(() {
+                            isEncrypted = !isEncrypted;
+                          });
+                          saveEncryptionState(isEncrypted);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: Icon(
+              Icons.lock,
+              color: isEncrypted ? Color.fromARGB(255, 43, 255, 0) : null,
+            ),
           ),
           IconButton(
               onPressed: () {
@@ -222,46 +283,68 @@ class _ChatPageState extends State<ChatPage> {
 
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
-                  if (widget.userName == snapshot.data.docs[index]['sender']) {
-                    return MessageTile(
-                      message: snapshot.data.docs[index]['message'],
-                      // message: AESEncryption.decryptAES(snapshot.data.docs[index]['message']),
-
-                      sender: snapshot.data.docs[index]['sender'],
-                      sentByMe: widget.userName ==
-                          snapshot.data.docs[index]['sender'],
-                      time:snapshot.data.docs[index]['time'],
-                    );
-                  } else {
-                      if(selectedLanguageCode=='en'){
-                         return MessageTile(
-                            message: snapshot.data.docs[index]['message'],
-                            sender: snapshot.data.docs[index]['sender'],
-                            sentByMe: widget.userName ==
-                                snapshot.data.docs[index]['sender'],
-                            time:snapshot.data.docs[index]['time'],
-                        );
-                      }
-                      if (snapshot
-                        .data
-                        .docs[index]['translatedfield'][selectedLanguageCode]
-                        .isEmpty) {
+                  if (isEncrypted) {
+                    try {
                       return MessageTile(
-                        message: "Typing....",
+                        message: AESEncryption.decryptAES(
+                            snapshot.data.docs[index]['message']),
                         sender: snapshot.data.docs[index]['sender'],
                         sentByMe: widget.userName ==
                             snapshot.data.docs[index]['sender'],
-                        time:snapshot.data.docs[index]['time'],
+                        time: snapshot.data.docs[index]['time'],
+                      );
+                    } catch (e) {
+                      return MessageTile(
+                        message: snapshot.data.docs[index]['message'],
+                        sender: snapshot.data.docs[index]['sender'],
+                        sentByMe: widget.userName ==
+                            snapshot.data.docs[index]['sender'],
+                        time: snapshot.data.docs[index]['time'],
+                      );
+                    }
+                  } else {
+                    if (widget.userName ==
+                        snapshot.data.docs[index]['sender']) {
+                      return MessageTile(
+                        message: snapshot.data.docs[index]['message'],
+                        // message: AESEncryption.decryptAES(snapshot.data.docs[index]['message']),
+
+                        sender: snapshot.data.docs[index]['sender'],
+                        sentByMe: widget.userName ==
+                            snapshot.data.docs[index]['sender'],
+                        time: snapshot.data.docs[index]['time'],
                       );
                     } else {
-                      return MessageTile(
-                        message: snapshot.data.docs[index]['translatedfield']
-                            [selectedLanguageCode],
-                        sender: snapshot.data.docs[index]['sender'],
-                        sentByMe: widget.userName ==
-                            snapshot.data.docs[index]['sender'],
-                        time:snapshot.data.docs[index]['time'],
-                      );
+                      // if (selectedLanguageCode == 'en') {
+                      //   return MessageTile(
+                      //     message: snapshot.data.docs[index]['message'],
+                      //     sender: snapshot.data.docs[index]['sender'],
+                      //     sentByMe: widget.userName ==
+                      //         snapshot.data.docs[index]['sender'],
+                      //     time: snapshot.data.docs[index]['time'],
+                      //   );
+                      // }
+                      if (snapshot
+                          .data
+                          .docs[index]['translatedfield'][selectedLanguageCode]
+                          .isEmpty) {
+                        return MessageTile(
+                          message: "Typing....",
+                          sender: snapshot.data.docs[index]['sender'],
+                          sentByMe: widget.userName ==
+                              snapshot.data.docs[index]['sender'],
+                          time: snapshot.data.docs[index]['time'],
+                        );
+                      } else {
+                        return MessageTile(
+                          message: snapshot.data.docs[index]['translatedfield']
+                              [selectedLanguageCode],
+                          sender: snapshot.data.docs[index]['sender'],
+                          sentByMe: widget.userName ==
+                              snapshot.data.docs[index]['sender'],
+                          time: snapshot.data.docs[index]['time'],
+                        );
+                      }
                     }
                   }
                 },
@@ -272,7 +355,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   sendMessage() {
-    if (messageController.text.isNotEmpty) {
+    if (messageController.text.isNotEmpty && !isEncrypted) {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
         // "message": AESEncryption.encryptAES(messageController.text),
@@ -280,6 +363,16 @@ class _ChatPageState extends State<ChatPage> {
         "time": DateTime.now().millisecondsSinceEpoch,
       };
 
+      DatabaseServices().sendMessage(widget.groupId, chatMessageMap);
+      setState(() {
+        messageController.clear();
+      });
+    } else {
+      Map<String, dynamic> chatMessageMap = {
+        "message": AESEncryption.encryptAES(messageController.text),
+        "sender": widget.userName,
+        "time": DateTime.now().millisecondsSinceEpoch,
+      };
       DatabaseServices().sendMessage(widget.groupId, chatMessageMap);
       setState(() {
         messageController.clear();
