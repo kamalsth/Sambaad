@@ -7,5 +7,6 @@ class Constants{
   static String projectId="sambaad-kamal";
   //final primaryColor=const Color(0xFFee7b64);
   //final primaryColor=const Color(0xff075E54);
-  final primaryColor=Color.fromARGB(255, 50, 155, 253);
+ // final primaryColor=Color.fromARGB(255, 50, 155, 253);
+  final primaryColor=const Color(0xFF34B7F1);
 }
