@@ -43,7 +43,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage>  with TickerProviderStateMixin {
+class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
@@ -55,16 +55,23 @@ class _ChatPageState extends State<ChatPage>  with TickerProviderStateMixin {
     getSavedLanguage();
     getChatandAdmin();
     getEncryptionState();
-     _controller = AnimationController(
-      duration: const Duration(seconds: 3),
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
-    _controller.repeat();
-
+    // _controller.repeat();
+    _controller.forward();
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Future.delayed(Duration(seconds: 4), () {
+          _controller.forward(from: 0.0);
+        });
+      }
+    });
     super.initState();
   }
 
-   @override
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -215,11 +222,20 @@ class _ChatPageState extends State<ChatPage>  with TickerProviderStateMixin {
                       color: Theme.of(context).primaryColor,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Center(
-                        child: Icon(
-                      Icons.send,
-                      color: Colors.white,
-                    )),
+                    // child: const Center(
+                    //     child: Icon(
+                    //   Icons.send,
+                    //   color: Colors.white,
+                    // )),
+                     child: Center(
+                      child: RotationTransition(
+                        turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
+                        child: const Icon(
+                          Icons.send,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 )
               ]),
@@ -276,7 +292,7 @@ class _ChatPageState extends State<ChatPage>  with TickerProviderStateMixin {
                                 (!isEncryptionEnabled)
                             ? const Text('🔒 This message is encrypted.',
 
-                              //  'You cannot view this message as it is encrypted. Turn on encryption to view it.',
+                                //  'You cannot view this message as it is encrypted. Turn on encryption to view it.',
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontStyle: FontStyle.italic,
@@ -308,7 +324,7 @@ class _ChatPageState extends State<ChatPage>  with TickerProviderStateMixin {
                         return MessageTile(
                           message: const Text(
                             '🔒 This message is encrypted.',
-                         //   'You cannot view this message as it is encrypted. Turn on encryption to view it.',
+                            //   'You cannot view this message as it is encrypted. Turn on encryption to view it.',
                             style: TextStyle(
                               fontStyle: FontStyle.italic,
                               color: Colors.white,
@@ -401,13 +417,13 @@ class _ChatPageState extends State<ChatPage>  with TickerProviderStateMixin {
         //   Icons.language,
         //   color: Color.fromARGB(255, 138, 231, 141),
         // ),
-         icon: RotationTransition(
+        icon: RotationTransition(
           turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
           child: const Icon(
             Icons.language,
             color: Color.fromARGB(255, 138, 231, 141),
           ),
-         ),
+        ),
 
         itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
           PopupMenuItem(
@@ -464,28 +480,25 @@ class _ChatPageState extends State<ChatPage>  with TickerProviderStateMixin {
       );
     } else {
       return RotationTransition(
-          turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-          child: IconButton(
-            icon: const Icon(
-              Icons.language,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const AlertDialog(
-                    content: Text(
-                        "⛔ Translation is disabled because you have enabled end to end encryption!! Please turn off E2EE in order to use translation functionality."),
-                  );
-                },
-
-              );
-            },
+        turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
+        child: IconButton(
+          icon: const Icon(
+            Icons.language,
+            color: Colors.white,
           ),
-        );
-        
-    
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const AlertDialog(
+                  content: Text(
+                      "⛔ Translation is disabled because you have enabled end to end encryption!! Please turn off E2EE in order to use translation functionality."),
+                );
+              },
+            );
+          },
+        ),
+      );
     }
   }
 }
