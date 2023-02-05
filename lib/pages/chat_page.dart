@@ -262,7 +262,7 @@ class _ChatPageState extends State<ChatPage> {
                                         ['isMessageEncrypted'] ==
                                     true) &&
                                 (!isEncryptionEnabled)
-                            ? const Text('🔒',
+                            ? const Text('🔒 This message is encrypted.',
 
                               //  'You cannot view this message as it is encrypted. Turn on encryption to view it.',
                                 textAlign: TextAlign.start,
@@ -295,7 +295,7 @@ class _ChatPageState extends State<ChatPage> {
                           true) {
                         return MessageTile(
                           message: const Text(
-                            '🔒',
+                            '🔒 This message is encrypted.',
                          //   'You cannot view this message as it is encrypted. Turn on encryption to view it.',
                             style: TextStyle(
                               fontStyle: FontStyle.italic,
