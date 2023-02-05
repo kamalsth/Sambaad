@@ -120,6 +120,16 @@ final CollectionReference groupCollection =FirebaseFirestore.instance.collection
 
   // send message
   sendMessage(String groupId, Map<String, dynamic> chatMessageData) async {
+     Map<String, String> translations = {
+      "de": "",
+      "en": "",
+      "es": "",
+      "fr": "",
+      "ne": "",
+      "zh": ""
+    };
+    chatMessageData['translatedfield'] = translations;
+    
     groupCollection.doc(groupId).collection("messages").add(chatMessageData);
     groupCollection.doc(groupId).update({
       "recentMessage": chatMessageData['message'],

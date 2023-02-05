@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sambaad/pages/forgot_password.dart';
 import 'package:sambaad/pages/home_page.dart';
 import 'package:sambaad/pages/register_page.dart';
 import 'package:sambaad/services/auth_services.dart';
@@ -138,7 +139,22 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         )
                       ]
-                    ))
+                    )),
+                    const SizedBox(height: 10 ),
+                     Text.rich(TextSpan(
+                          text: "Forgot Your Password? ",
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 14),
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: "Reset Password",
+                                style: const TextStyle(color: Color.fromARGB(255, 6, 68, 161),decoration: TextDecoration.underline,fontWeight:FontWeight.bold),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    nextScreen(context, ForgotPasswordScreen());
+                                  }),
+                          ],
+                        )),
 
                     
                 ],

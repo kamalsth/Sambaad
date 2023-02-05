@@ -61,9 +61,9 @@ class _GroupInfoState extends State<GroupInfo> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: const Text("Exit"),
+                        title: const Text("Leave Group"),
                         content:
-                            const Text("Are you sure you want to exit from group? "),
+                            const Text("Are you sure you want to leave group? "),
                         actions: [
                           IconButton(
                             onPressed: () async {
