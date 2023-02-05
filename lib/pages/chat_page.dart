@@ -149,7 +149,7 @@ class _ChatPageState extends State<ChatPage> {
               Icons.lock,
               color: isEncryptionEnabled
                   ? Color.fromARGB(255, 43, 255, 0)
-                  : Colors.red,
+                  : Colors.white,
             ),
           ),
           IconButton(
@@ -262,8 +262,9 @@ class _ChatPageState extends State<ChatPage> {
                                         ['isMessageEncrypted'] ==
                                     true) &&
                                 (!isEncryptionEnabled)
-                            ? const Text(
-                                'You cannot view this message as it is encrypted. Turn on encryption to view it.',
+                            ? const Text('🔒',
+
+                              //  'You cannot view this message as it is encrypted. Turn on encryption to view it.',
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontStyle: FontStyle.italic,
@@ -294,7 +295,8 @@ class _ChatPageState extends State<ChatPage> {
                           true) {
                         return MessageTile(
                           message: const Text(
-                            'You cannot view this message as it is encrypted. Turn on encryption to view it.',
+                            '🔒',
+                         //   'You cannot view this message as it is encrypted. Turn on encryption to view it.',
                             style: TextStyle(
                               fontStyle: FontStyle.italic,
                               color: Colors.white,
@@ -444,7 +446,7 @@ class _ChatPageState extends State<ChatPage> {
       return IconButton(
         icon: const Icon(
           Icons.language,
-          color: Color.fromARGB(255, 238, 93, 93),
+          color: Colors.white,
         ),
         onPressed: () {
           showDialog(
