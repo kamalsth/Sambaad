@@ -1,54 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:sambaad/pages/BMgroupSearch.dart';
 import 'package:sambaad/pages/profile_page.dart';
-import 'package:sambaad/pages/search_page.dart';
 import 'package:sambaad/services/auth_services.dart';
 import 'package:sambaad/services/database_services.dart';
 import 'package:sambaad/widgets/group_title.dart';
 import 'package:sambaad/widgets/widgets.dart';
-
 import '../helper/helper_function.dart';
 import 'login_page.dart';
 
-// class HomePage extends StatefulWidget {
-//   const HomePage({super.key});
-
-//   @override
-//   State<HomePage> createState() => _HomePageState();
-// }
-
-// class _HomePageState extends State<HomePage> {
-//   AuthService authService=AuthService();
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       //body: Center(child: Text("Home Page")),
-//      appBar: AppBar(
-//       actions: [
-//         IconButton(onPressed: (){
-//           nextScreen(context,const Searchpage());
-//         }, icon: const Icon(
-//           Icons.search,
-//         ))
-//       ],
-//       elevation: 0,
-//       centerTitle: true,
-//       backgroundColor: Theme.of(context).primaryColor,
-//       title: Text("संवाद",style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontSize: 27) ,),
-//      ),
-//      drawer: Drawer(
-//       child: ListView(
-//         padding: const EdgeInsets.symmetric(vertical:50),
-
-//       ),
-//      ),
-//     );
-//   }
-// }
 
 class HomePage extends StatefulWidget {
-  //const HomePage({super.key});
   const HomePage({Key? key}):super(key: key);
 
   @override
@@ -107,7 +69,7 @@ class _HomePageState extends State<HomePage> {
      appBar: AppBar(
       actions: [
         IconButton(onPressed: (){
-          nextScreen(context,const SearchPage());
+          nextScreen(context,const BMSearchPage());
         }, icon: const Icon(
           Icons.search,
         ))
