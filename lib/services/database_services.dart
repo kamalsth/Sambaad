@@ -67,6 +67,18 @@ final CollectionReference groupCollection =FirebaseFirestore.instance.collection
     return documentSnapshot['admin'];
   }
 
+  Future getRecentMessage(String groupId) async {
+    DocumentReference d = groupCollection.doc(groupId);
+    DocumentSnapshot documentSnapshot = await d.get();
+    return documentSnapshot['recentMessage'];
+  }
+
+  Future getRecentMessageSender(String groupId) async {
+    DocumentReference d = groupCollection.doc(groupId);
+    DocumentSnapshot documentSnapshot = await d.get();
+    return documentSnapshot['recentMessageSender'];
+  }
+
 //getting group members
   getGroupMembers(groupId)async{
     return groupCollection.doc(groupId).snapshots();
