@@ -448,6 +448,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   Widget languageButton(bool isEncryptionEnabled, BuildContext context) {
     if (!isEncryptionEnabled) {
       return PopupMenuButton<String>(
+        tooltip: "Select Language",
         onSelected: (value) {
           setState(() {
             selectedLanguageCode = value;
