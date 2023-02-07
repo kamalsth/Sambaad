@@ -32,7 +32,7 @@ class _GroupTileState extends State<GroupTile> {
   }
 
   void startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 0), (_) {
+    _timer = Timer.periodic(const Duration(microseconds: 5), (_) {
       setState(() {
         getRecentMessageAndSender();
       });
@@ -88,7 +88,7 @@ class _GroupTileState extends State<GroupTile> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             //  ignore: unnecessary_null_comparison
-            subtitle: Text("$recentMessageSender: $recentMessage",style: const TextStyle(fontSize: 13),)),
+            subtitle:recentMessage=="" && recentMessageSender==""?const Text(""): Text("$recentMessageSender: $recentMessage",style: const TextStyle(fontSize: 13),)),
       ),
     );
   }
