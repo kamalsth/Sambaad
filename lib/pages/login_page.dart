@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                       const SizedBox(height: 5),
                       //const Text("Login and start conversing instantly! No barriers, no limits!",
-                      const Text("Stay connected with friends and family, no matter where you are.",
+                      const Text("Stay connected with friends and family, no matter where you are!!",
                       textAlign: TextAlign.center,
                         style: TextStyle(fontSize:15,fontWeight:FontWeight.w400)),
                       const SizedBox(height: 20),
